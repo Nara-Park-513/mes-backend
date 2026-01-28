@@ -65,7 +65,7 @@ public class SecurityConfig{
 		.anyRequest().authenticated()//위에서 허용한것 빼고는 전부 로그인(인증)된 사용자만 접근가능
 		)
         .oauth2Login(oauth2 -> oauth2
-        .defaultSuccessUrl("http://localhost:5173/login-success", true)
+        .defaultSuccessUrl("http://localhost:5173/admin", true)
         );
 		return http.build();
 //지금까지 설정한 보안 규칙을 최종 완성해서 서버에 적용
