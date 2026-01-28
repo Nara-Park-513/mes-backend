@@ -13,6 +13,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
 
 @Configuration //스프링 설정 클래스 (빈 등록/보안 설정)
 @EnableWebSecurity //Spring Security기능을 활성화 보안설정 기준으로 사용하게 해줌
@@ -61,7 +63,10 @@ public class SecurityConfig{
 		.requestMatchers("/api/sales/orders/**").permitAll()
 		.requestMatchers("/", "/error", "/favicon.ico").permitAll()
 		.anyRequest().authenticated()//위에서 허용한것 빼고는 전부 로그인(인증)된 사용자만 접근가능
-		);
+		)
+        .oauth2Login(oauth2 -> oauth2
+        .defaultSuccessUrl("http://localhost:5173/login-success", true)
+        );
 		return http.build();
 //지금까지 설정한 보안 규칙을 최종 완성해서 서버에 적용
 	}
