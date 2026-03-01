@@ -1,107 +1,91 @@
-# mes-backend
+# MES Backend API Server
 
-MES(Manufacturing Execution System) 도메인을 기반으로 **실제 현업에서 사용 가능한 백엔드 구조를 학습·구현하기 위해 제작한 Spring Boot 기반 REST API 서버**입니다.  
-제조 현장에서 발생하는 생산·판매·구매 흐름을 시스템으로 관리한다는 전제 하에 실제 업무 시나리오를 가정하여 API 구조를 설계했습니다.  
-단순 CRUD 구현에 그치지 않고, **인증·보안·도메인 분리·예외 처리 등 실무 핵심 요소를 중심으로 설계**했습니다.
+MES(Manufacturing Execution System) 백엔드 API 서버입니다.  
+Spring Boot 기반의 백엔드 구조로 생산/작업 흐름 및 관련 도메인 API를 제공하도록 설계된 프로젝트입니다.
 
---------------------------------------------------------------------------------------------------------------------------
+---
 
-## 전체 아키텍처 개요
+## 📌 프로젝트 소개
 
-- Client → REST API 호출
-- Spring Security Filter에서 JWT 인증/인가 처리
-- Controller: 요청/응답 책임
-- Service: 도메인 비즈니스 로직 처리
-- Repository(JPA): 영속성 관리
-- Global Exception Handler: 공통 예외 처리
+- 생산/작업 관련 도메인 API 구현 준비
+- Spring Boot 기반 백엔드 아키텍처 구성
+- 향후 프론트엔드 연동 및 비즈니스 로직 확장 예정
 
-## 기술 스택
+---
 
-- Java 21
+## 🛠 기술 스택
+
+### Backend
+- Java
 - Spring Boot
-- Spring Security + JWT
-- JPA (Hibernate)
-- Gradle
-- MariaDB / MySQL
+- Spring Web
+- Spring Data JPA
+- (필요 시 JWT / Spring Security 연동 예정)
 
---------------------------------------------------------------------------------------------------------------------------
+### Database
+- MySQL / MariaDB (연동 예정)
 
-## 핵심 설계 포인트
+### Dev Tools
+- Git
+- GitHub
+- IntelliJ / VS Code
+- Postman (API 테스트)
 
-### Problem Solving
+---
 
-- **JWT 인증 흐름 안정화**  
-  Access Token 만료 이후 인증 오류 문제를 토큰 역할 분리 및 Security Filter 기반 검증 구조로 개선
+## 📁 주요 폴더 구조 예시
 
-- **도메인 중심 패키지 구조 리팩토링**  
-  기능 단위가 아닌 회원·생산·구매 도메인 기준 패키지 구성으로 유지보수성과 확장성 확보
 
-- **JPA 매핑 및 JPQL 오류 해결**  
-  엔티티 필드 기준 쿼리 작성 원칙 정리로 런타임 매핑 오류 제거 및 데이터 정합성 확보
+mes-backend
+┣ src
+┃ ┣ main
+┃ ┃ ┣ java
+┃ ┃ ┃ ┗ com.example.mesbackend
+┃ ┃ ┃ ┃ ┣ controller
+┃ ┃ ┃ ┃ ┣ service
+┃ ┃ ┃ ┃ ┗ repository
+┃ ┃ ┗ resources
+┃ ┃ ┗ application.yml
+┣ .gitignore
+┣ build.gradle
+┗ settings.gradle
 
---------------------------------------------------------------------------------------------------------------------------
 
-### JWT 기반 인증 / 인가 구조
+---
 
-- 로그인 시 Access Token 발급
-- Spring Security Filter에서 JWT 검증
-- Stateless 인증 구조로 서버 상태 의존성 제거
-- 인증/인가 실패에 대한 공통 예외 처리
-- 인증이 필요한 API와 공개 API를 명확히 분리  
-- 개발 단계에서는 In-Memory UserDetailsService 기반 인증 사용 
+## 🚀 로컬 실행 방법
 
---------------------------------------------------------------------------------------------------------------------------
+### 1. 저장소 클론
 
-### 도메인 중심 패키지 구조
+```bash
+git clone https://github.com/Nara-Park-513/mes-backend.git
+cd mes-backend
+2. 환경 설정
 
-- controller / service / repository 역할 분리
-- 회원, 생산 오더, 판매 오더, 구매 자재 도메인 단위 구성
-- 비즈니스 로직을 Service 계층에 집중
+application.yml 또는 application.properties에 데이터베이스 및 기타 환경 설정을 추가합니다.
 
---------------------------------------------------------------------------------------------------------------------------
+예시:
 
-### 실무 기준 예외 처리
+spring.datasource.url=jdbc:mysql://localhost:3306/mesdb
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+3. 의존성 설치 및 빌드
+./gradlew clean build
+4. 실행
+./gradlew bootRun
 
-- GlobalExceptionHandler 기반 공통 예외 처리
-- 인증/인가, 검증 오류에 대한 일관된 응답 포맷 제공
-- 프론트엔드 및 외부 시스템 연동을 고려한 에러 구조 설계
-- DTO 단 Bean Validation(@NotBlank, @Pattern, @DecimalMin 등) 적용  
-- 프론트엔드 입력값과 서버 검증 규칙 불일치 이슈를 경험하며 요청 데이터 정규화 및 Validation 예외 전용 처리 구조 설계
+기본 실행 포트는 http://localhost:8080 입니다.
 
---------------------------------------------------------------------------------------------------------------------------
+📌 구현 예정 기능
 
-## 주요 기능
+생산 / 작업 도메인 API 구현
 
-### 회원 관리
-- 로그인 처리
-- JWT 기반 인증
+스케줄 및 리포트 API
 
-### 생산 오더 관리
-- 생산 지시 등록 / 조회
+사용자 및 권한 관리 연동
 
-### 판매 오더 관리
-- 판매 주문 등록 / 조회
+프론트엔드와의 REST API 연동
 
-### 구매 자재 관리
-- 구매 자재 등록 / 수정 / 삭제
-- 목록 조회 (Paging)
-- 거래처 및 자재 정보 관리
-- 요청일 / 입고 예정일 관리
-- DTO 기반 요청·응답 분리 및 Validation 적용
+📜 License
 
---------------------------------------------------------------------------------------------------------------------------
-
-## 프로젝트 목적
-
-- ERP / MES 백엔드 도메인 구조 이해
-- Spring Security + JWT 인증 흐름 실습
-- 실무형 REST API 설계 경험
-- 백엔드 신입 개발자 포트폴리오 목적
-- 면접에서 설계 의도와 판단 근거를 설명할 수 있는 프로젝트 구축
-
---------------------------------------------------------------------------------------------------------------------------
-
-## 정리
-
-본 프로젝트는 단순히 동작하는 코드를 넘어서, **왜 이런 구조를 선택했는지를 설명할 수 있는 백엔드 프로젝트**를 목표로 합니다.  
-실제 실무 환경에서 요구되는 구조와 판단 과정을 이해하고 이를 설명할 수 있는 개발자가 되기 위한 포트폴리오입니다.
+본 프로젝트는 학습 및 포트폴리오 목적의 백엔드 서버입니다
