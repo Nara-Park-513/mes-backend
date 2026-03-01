@@ -33,26 +33,6 @@ Spring Boot 기반의 백엔드 구조로 생산/작업 흐름 및 관련 도메
 
 ---
 
-## 📁 주요 폴더 구조 예시
-
-
-mes-backend
-┣ src
-┃ ┣ main
-┃ ┃ ┣ java
-┃ ┃ ┃ ┗ com.example.mesbackend
-┃ ┃ ┃ ┃ ┣ controller
-┃ ┃ ┃ ┃ ┣ service
-┃ ┃ ┃ ┃ ┗ repository
-┃ ┃ ┗ resources
-┃ ┃ ┗ application.yml
-┣ .gitignore
-┣ build.gradle
-┗ settings.gradle
-
-
----
-
 ## 🚀 로컬 실행 방법
 
 ### 1. 저장소 클론
