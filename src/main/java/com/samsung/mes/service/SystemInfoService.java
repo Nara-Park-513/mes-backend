@@ -15,47 +15,63 @@ import java.util.NoSuchElementException;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-
 public class SystemInfoService {
     private final SystemInfoRepository repo;
 
     /**
      * ✅ 목록
-     * /api/system-infos?useYn=Y&searchType=NAME&keyword=mes&status=ACTIVE&page=0&size=10
-     *
-     * searchType: NAME | GROUP | OWNER | STATUS
-     * status 파라미터는 선택(필요하면 name검색과 조합 가능)
+     * 기본은 전체 조회
+     * useYn 파라미터가 있을 때만 Y/N 필터 적용
      */
     public Page<SystemInfoResponse> list(String useYn, String searchType, String keyword, String status, Pageable pageable) {
-        String u = (useYn == null || useYn.isBlank()) ? "Y" : useYn;
+        String u = (useYn == null || useYn.isBlank()) ? null : useYn.trim();
         String k = (keyword == null) ? "" : keyword.trim();
         String st = (status == null) ? "" : status.trim();
 
         Page<SystemInfo> page;
 
-        // status + name keyword 조합(많이 쓰면)
-        if (!st.isBlank() && !k.isBlank() && (searchType == null || "NAME".equalsIgnoreCase(searchType))) {
+        // 1. 검색/필터 아무것도 없으면 전체 조회
+        if (u == null && k.isBlank() && st.isBlank()) {
+            page = repo.findAll(pageable);
+            return page.map(this::toResponse);
+        }
+
+        // 2. useYn만 있고 검색어/상태 없으면 useYn 필터
+        if (u != null && k.isBlank() && st.isBlank()) {
+            page = repo.findByUseYn(u, pageable);
+            return page.map(this::toResponse);
+        }
+
+        // 3. useYn + status + 이름검색
+        if (u != null && !st.isBlank() && !k.isBlank() &&
+                (searchType == null || searchType.isBlank() || "NAME".equalsIgnoreCase(searchType))) {
             page = repo.findByUseYnAndStatusAndSystemNameContainingIgnoreCase(u, st, k, pageable);
             return page.map(this::toResponse);
         }
 
-        if (k.isBlank()) {
-            // keyword 없을 때
-            if (!st.isBlank()) page = repo.findByUseYnAndStatus(u, st, pageable);
-            else page = repo.findByUseYn(u, pageable);
+        // 4. useYn + status 만
+        if (u != null && k.isBlank() && !st.isBlank()) {
+            page = repo.findByUseYnAndStatus(u, st, pageable);
             return page.map(this::toResponse);
         }
 
-        // keyword 있을 때 searchType에 따라 분기
-        String type = (searchType == null || searchType.isBlank()) ? "NAME" : searchType.toUpperCase();
+        // 5. useYn + keyword
+        if (u != null && !k.isBlank()) {
+            String type = (searchType == null || searchType.isBlank()) ? "NAME" : searchType.toUpperCase();
 
-        switch (type) {
-            case "GROUP" -> page = repo.findByUseYnAndSystemGroupContainingIgnoreCase(u, k, pageable);
-            case "OWNER" -> page = repo.findByUseYnAndOwnerContainingIgnoreCase(u, k, pageable);
-            case "STATUS" -> page = repo.findByUseYnAndStatus(u, k.toUpperCase(), pageable); // keyword를 status로 사용
-            default -> page = repo.findByUseYnAndSystemNameContainingIgnoreCase(u, k, pageable);
+            switch (type) {
+                case "GROUP" -> page = repo.findByUseYnAndSystemGroupContainingIgnoreCase(u, k, pageable);
+                case "OWNER" -> page = repo.findByUseYnAndOwnerContainingIgnoreCase(u, k, pageable);
+                case "STATUS" -> page = repo.findByUseYnAndStatus(u, k.toUpperCase(), pageable);
+                default -> page = repo.findByUseYnAndSystemNameContainingIgnoreCase(u, k, pageable);
+            }
+            return page.map(this::toResponse);
         }
 
+        // 6. useYn 없이 검색/상태가 들어온 경우
+        // 현재 Repository에는 전체검색용 메서드가 없으므로 일단 전체 조회
+        // 나중에 필요하면 findBySystemNameContainingIgnoreCase 같은 메서드 추가해서 고도화
+        page = repo.findAll(pageable);
         return page.map(this::toResponse);
     }
 
@@ -80,8 +96,8 @@ public class SystemInfoService {
                 .systemGroup(req.getSystemGroup().trim())
                 .owner(req.getOwner())
                 .version(req.getVersion())
-                .status(req.getStatus()) // null이면 prePersist가 ACTIVE
-                .useYn(req.getUseYn())   // null이면 prePersist가 Y
+                .status(req.getStatus())
+                .useYn(req.getUseYn())
                 .remark(req.getRemark())
                 .build();
 
@@ -105,8 +121,12 @@ public class SystemInfoService {
         e.setOwner(req.getOwner());
         e.setVersion(req.getVersion());
 
-        if (req.getStatus() != null && !req.getStatus().isBlank()) e.setStatus(req.getStatus().trim());
-        if (req.getUseYn() != null && !req.getUseYn().isBlank()) e.setUseYn(req.getUseYn().trim());
+        if (req.getStatus() != null && !req.getStatus().isBlank()) {
+            e.setStatus(req.getStatus().trim());
+        }
+        if (req.getUseYn() != null && !req.getUseYn().isBlank()) {
+            e.setUseYn(req.getUseYn().trim());
+        }
 
         e.setRemark(req.getRemark());
 
@@ -116,11 +136,13 @@ public class SystemInfoService {
     // ✅ 삭제(물리)
     @Transactional
     public void delete(Long id) {
-        if (!repo.existsById(id)) throw new NoSuchElementException("SystemInfo가 없습니다. id=" + id);
+        if (!repo.existsById(id)) {
+            throw new NoSuchElementException("SystemInfo가 없습니다. id=" + id);
+        }
         repo.deleteById(id);
     }
 
-    // ✅ 비활성(soft 느낌)
+    // ✅ 비활성
     @Transactional
     public SystemInfoResponse disable(Long id) {
         SystemInfo e = repo.findById(id)
@@ -143,5 +165,4 @@ public class SystemInfoService {
                 .updatedAt(e.getUpdatedAt())
                 .build();
     }
-
 }
