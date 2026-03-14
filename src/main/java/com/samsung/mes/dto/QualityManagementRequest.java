@@ -7,8 +7,12 @@ import lombok.Setter;
 @Setter
 public class QualityManagementRequest {
 
-    private String inspectionStandard;
-    private String processInspection;
-    private String defectManagement;
-    private String qualityHistory;
+    private String inspectionDate;
+    private String itemCode;
+    private String itemName;
+    private Integer inspectionQty;
+    private Integer defectQty;
+    private String judgementResult;
+    private String actionType;
+    private String actionStatus;
 }

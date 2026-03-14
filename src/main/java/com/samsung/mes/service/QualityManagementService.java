@@ -20,10 +20,14 @@ public class QualityManagementService {
         validate(request);
 
         QualityManagement entity = new QualityManagement();
-        entity.setInspectionStandard(request.getInspectionStandard().trim());
-        entity.setProcessInspection(request.getProcessInspection().trim());
-        entity.setDefectManagement(request.getDefectManagement().trim());
-        entity.setQualityHistory(request.getQualityHistory().trim());
+        entity.setInspectionDate(request.getInspectionDate().trim());
+        entity.setItemCode(request.getItemCode().trim());
+        entity.setItemName(request.getItemName().trim());
+        entity.setInspectionQty(request.getInspectionQty());
+        entity.setDefectQty(request.getDefectQty());
+        entity.setJudgementResult(request.getJudgementResult().trim());
+        entity.setActionType(request.getActionType().trim());
+        entity.setActionStatus(request.getActionStatus().trim());
 
         return qualityManagementRepository.save(entity);
     }
@@ -43,10 +47,14 @@ public class QualityManagementService {
         validate(request);
 
         QualityManagement entity = getById(id);
-        entity.setInspectionStandard(request.getInspectionStandard().trim());
-        entity.setProcessInspection(request.getProcessInspection().trim());
-        entity.setDefectManagement(request.getDefectManagement().trim());
-        entity.setQualityHistory(request.getQualityHistory().trim());
+        entity.setInspectionDate(request.getInspectionDate().trim());
+        entity.setItemCode(request.getItemCode().trim());
+        entity.setItemName(request.getItemName().trim());
+        entity.setInspectionQty(request.getInspectionQty());
+        entity.setDefectQty(request.getDefectQty());
+        entity.setJudgementResult(request.getJudgementResult().trim());
+        entity.setActionType(request.getActionType().trim());
+        entity.setActionStatus(request.getActionStatus().trim());
 
         return entity;
     }
@@ -57,17 +65,38 @@ public class QualityManagementService {
     }
 
     private void validate(QualityManagementRequest request) {
-        if (request.getInspectionStandard() == null || request.getInspectionStandard().isBlank()) {
-            throw new IllegalArgumentException("검사기준관리를 입력하세요.");
+        if (request.getInspectionDate() == null || request.getInspectionDate().isBlank()) {
+            throw new IllegalArgumentException("검사일자를 입력하세요.");
         }
-        if (request.getProcessInspection() == null || request.getProcessInspection().isBlank()) {
-            throw new IllegalArgumentException("공정검사를 입력하세요.");
+        if (request.getItemCode() == null || request.getItemCode().isBlank()) {
+            throw new IllegalArgumentException("품목코드를 입력하세요.");
         }
-        if (request.getDefectManagement() == null || request.getDefectManagement().isBlank()) {
-            throw new IllegalArgumentException("불량관리를 입력하세요.");
+        if (request.getItemName() == null || request.getItemName().isBlank()) {
+            throw new IllegalArgumentException("품목명을 입력하세요.");
         }
-        if (request.getQualityHistory() == null || request.getQualityHistory().isBlank()) {
-            throw new IllegalArgumentException("품질이력을 입력하세요.");
+        if (request.getInspectionQty() == null) {
+            throw new IllegalArgumentException("검사수량을 입력하세요.");
+        }
+        if (request.getInspectionQty() < 0) {
+            throw new IllegalArgumentException("검사수량은 0 이상이어야 합니다.");
+        }
+        if (request.getDefectQty() == null) {
+            throw new IllegalArgumentException("불량수량을 입력하세요.");
+        }
+        if (request.getDefectQty() < 0) {
+            throw new IllegalArgumentException("불량수량은 0 이상이어야 합니다.");
+        }
+        if (request.getDefectQty() > request.getInspectionQty()) {
+            throw new IllegalArgumentException("불량수량은 검사수량보다 클 수 없습니다.");
+        }
+        if (request.getJudgementResult() == null || request.getJudgementResult().isBlank()) {
+            throw new IllegalArgumentException("판정결과를 입력하세요.");
+        }
+        if (request.getActionType() == null || request.getActionType().isBlank()) {
+            throw new IllegalArgumentException("조치구분을 입력하세요.");
+        }
+        if (request.getActionStatus() == null || request.getActionStatus().isBlank()) {
+            throw new IllegalArgumentException("조치상태를 입력하세요.");
         }
     }
 }

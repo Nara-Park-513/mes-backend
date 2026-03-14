@@ -18,15 +18,27 @@ public class QualityManagement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "inspection_standard", nullable = false, length = 500)
-    private String inspectionStandard;
+    @Column(name = "inspection_date", nullable = false, length = 20)
+    private String inspectionDate;
 
-    @Column(name = "process_inspection", nullable = false, length = 500)
-    private String processInspection;
+    @Column(name = "item_code", nullable = false, length = 100)
+    private String itemCode;
 
-    @Column(name = "defect_management", nullable = false, length = 500)
-    private String defectManagement;
+    @Column(name = "item_name", nullable = false, length = 255)
+    private String itemName;
 
-    @Column(name = "quality_history", nullable = false, length = 500)
-    private String qualityHistory;
+    @Column(name = "inspection_qty", nullable = false)
+    private Integer inspectionQty;
+
+    @Column(name = "defect_qty", nullable = false)
+    private Integer defectQty;
+
+    @Column(name = "judgement_result", nullable = false, length = 50)
+    private String judgementResult;
+
+    @Column(name = "action_type", nullable = false, length = 50)
+    private String actionType;
+
+    @Column(name = "action_status", nullable = false, length = 50)
+    private String actionStatus;
 }

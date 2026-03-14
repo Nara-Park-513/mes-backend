@@ -13,18 +13,26 @@ import com.samsung.mes.entity.QualityManagement;
 public class QualityManagementResponse {
 
     private Long id;
-    private String inspectionStandard;
-    private String processInspection;
-    private String defectManagement;
-    private String qualityHistory;
+    private String inspectionDate;
+    private String itemCode;
+    private String itemName;
+    private Integer inspectionQty;
+    private Integer defectQty;
+    private String judgementResult;
+    private String actionType;
+    private String actionStatus;
 
     public static QualityManagementResponse from(QualityManagement entity) {
         return QualityManagementResponse.builder()
                 .id(entity.getId())
-                .inspectionStandard(entity.getInspectionStandard())
-                .processInspection(entity.getProcessInspection())
-                .defectManagement(entity.getDefectManagement())
-                .qualityHistory(entity.getQualityHistory())
+                .inspectionDate(entity.getInspectionDate())
+                .itemCode(entity.getItemCode())
+                .itemName(entity.getItemName())
+                .inspectionQty(entity.getInspectionQty())
+                .defectQty(entity.getDefectQty())
+                .judgementResult(entity.getJudgementResult())
+                .actionType(entity.getActionType())
+                .actionStatus(entity.getActionStatus())
                 .build();
     }
 }
