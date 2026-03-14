@@ -1,86 +1,82 @@
-# DAON – Integrated Commerce Platform (Backend)
+# DAON MES – Manufacturing Execution System (Backend)
 
-Spring Boot 기반으로 개발한 **통합 쇼핑몰 백엔드 프로젝트**입니다.  
-Next.js 프론트엔드와 연동하여 상품 조회, 주문 처리, 카카오페이 결제 요청 및 승인 흐름을 처리합니다.
+Spring Boot 기반으로 개발한 **MES 백엔드 API 서버**입니다.  
+생산 및 품질 흐름과 관련된 데이터를 처리하기 위한 구조로 구성했으며,  
+MES 프론트엔드 애플리케이션과의 연동을 고려해 프로젝트를 설계했습니다.
 
-단순 API 서버 구현을 넘어,  
-**ERP 및 MES 확장을 고려한 통합 상거래 플랫폼**을 목표로 개발했습니다.
+단순 CRUD 중심 구성을 넘어,  
+**생산 및 품질 프로세스를 고려한 MES 백엔드 구조**를 목표로 개발했습니다.
 
 ---
 
 ## 📌 Project Overview
 
-DAON은 사용자 관점의 쇼핑몰 기능과  
-관리/운영 관점의 ERP·MES 확장 가능성을 함께 고려한 프로젝트입니다.
+DAON MES Backend는 생산 및 품질 흐름을 처리하기 위한  
+MES 백엔드 API 서버입니다.
 
-백엔드는 Spring Boot 기반으로 구현되었으며,  
-프론트엔드와 REST API 방식으로 통신하며 주문 및 결제 프로세스를 처리합니다.
+Spring Boot 기반으로 구성되었으며,  
+데이터베이스 연동, API 처리, 유효성 검증, 향후 인증 및 보안 확장을 고려한 구조로 설계했습니다.
 
 ### 핵심 목표
-- 쇼핑몰 주문 및 결제 API 구현
-- 카카오페이 결제 연동 처리
-- 프론트엔드와의 안정적인 API 통신 구조 설계
-- ERP / MES와 연결 가능한 통합 백엔드 구조 마련
+- MES 업무 흐름을 위한 백엔드 API 기반 마련
+- 생산 / 품질 데이터 처리를 위한 서버 구조 구성
+- 데이터베이스 연동 및 JPA 기반 처리
+- 프론트엔드와 연동 가능한 API 서버 구성
 
 ---
 
 ## 🚀 Tech Stack
 
 ### Backend
+- **Java 21**
 - **Spring Boot**
-- **Java**
-- Spring Web
+- Spring Web MVC
 - Spring Data JPA
+- Spring Security
+- Spring Validation
 - Lombok
 
 ### Database
-- MySQL / MariaDB
+- MariaDB
 
-### Features / APIs
-- REST API 기반 주문 처리
-- 카카오페이 결제 연동
-- JPA 기반 데이터 처리
+### Authentication / Security
+- JJWT 라이브러리 포함
+- Spring Security 기반 확장 구조 고려
 
 ### Dev Tools
+- Gradle
 - Git
 - GitHub
 - IntelliJ IDEA / VS Code
-- Postman
 
 ---
 
 ## ✨ Main Features
 
-### 🛍 상품 및 주문
-- 상품 조회 API 제공
-- 주문 정보 저장 및 처리
-- 프론트엔드 주문 페이지와 연동
-- 주문 요청 데이터 검증
+### 🏭 생산 및 품질 API 기반 구성
+- 생산 및 품질 흐름을 위한 백엔드 구조 구성
+- 프론트엔드 연동을 고려한 API 처리 기반 마련
+- 도메인 확장을 고려한 프로젝트 구조 설계
 
-### 💳 카카오페이 가결제 연동
-- Ready → Redirect → Approve 흐름 처리
-- 결제 요청 정보 구성
-- 결제 승인 완료 후 결과 반환
-- 결제 실패 / 취소 상황 대응 구조 설계
+### 🗄 데이터 처리 및 검증
+- MariaDB 연동 설정
+- Spring Data JPA 기반 데이터 처리
+- Validation 기반 요청값 검증 구조 포함
 
-### 🔗 프론트엔드 연동
-- `/api/payments/kakaopay/ready` 요청 처리
-- 카카오 결제창 redirect URL 반환
-- success 요청에서 `pg_token` 전달받아 승인 처리
-- 프론트엔드 요청 흐름에 맞춘 응답 구조 구성
+### ⚙️ 서버 설정
+- 애플리케이션 포트 설정
+- SQL 로그 출력 설정
+- 상세 에러 메시지 및 바인딩 오류 출력 설정
 
 ---
 
-## 🔄 Payment Flow
+## 🔄 Backend Workflow
 
-1. 사용자가 프론트엔드에서 주문하기 버튼을 클릭
-2. 프론트엔드가 백엔드 결제 준비 API를 호출
-3. 백엔드가 카카오페이 Ready API를 호출
-4. 카카오 결제창 URL을 프론트엔드에 반환
-5. 사용자가 카카오 결제창에서 결제를 진행
-6. 결제 완료 후 success 페이지로 이동
-7. `pg_token`을 백엔드 Approve API로 전달
-8. 최종 결제 승인 및 완료 처리
+1. 클라이언트가 생산 또는 품질 관련 요청을 보낸다
+2. 서버가 요청값을 검증하고 비즈니스 로직을 처리한다
+3. JPA를 통해 데이터베이스와 연동한다
+4. 처리 결과를 API 응답으로 반환한다
+5. 향후 인증 및 권한 처리 구조를 연동할 수 있도록 확장한다
 
 ---
 
@@ -93,17 +89,24 @@ cd mes-backend
 ```
 
 ### 2. Configure environment
-`application.yml` 또는 `application.properties`에 데이터베이스 및 환경 설정을 추가합니다.
+`src/main/resources/application.properties` 파일에서 데이터베이스 및 서버 설정을 확인합니다.
 
 예시:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/mesdb
-spring.datasource.username=your_username
-spring.datasource.password=your_password
-```
+spring.application.name=mes
+server.port=9500
 
-카카오페이 연동을 위한 API 키 및 관련 설정도 함께 추가해야 합니다.
+spring.datasource.url=jdbc:mariadb://localhost:3307/mes
+spring.datasource.username=root
+spring.datasource.password=1234
+spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+
+spring.jpa.database-platform=org.hibernate.dialect.MariaDBDialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+```
 
 ### 3. Build project
 ```bash
@@ -117,44 +120,44 @@ spring.datasource.password=your_password
 
 ### 5. Open in browser
 ```bash
-http://localhost:8080
+http://localhost:9500
 ```
 
-> 프론트엔드 서버(`http://localhost:3000`)와 함께 실행해야 주문 및 결제 기능이 정상적으로 동작합니다.
+> MES 프론트엔드 애플리케이션과 함께 실행하면 API 연동을 확인할 수 있습니다.
 
 ---
 
 ## ⚠️ Troubleshooting
 
-개발 과정에서 아래와 같은 이슈를 해결했습니다.
+개발 과정에서 아래와 같은 항목을 중심으로 점검할 수 있습니다.
 
-- 프론트엔드 ↔ 백엔드 API 연동 문제 해결
-- 카카오페이 결제 요청 데이터 누락 문제 점검
-- 환경변수 및 설정 파일 구성 오류 해결
-- CORS 및 요청/응답 구조 문제 정리
-- 데이터베이스 연결 설정 문제 해결
+- MariaDB 연결 설정 확인
+- 서버 포트 및 application.properties 설정 확인
+- JPA 매핑 및 SQL 로그 출력 확인
+- 요청값 검증 및 예외 응답 구조 점검
+- 프론트엔드 연동 시 API 경로 및 CORS 설정 점검
 
 ---
 
 ## 🎯 Project Purpose
 
-- 쇼핑몰 + ERP / MES 확장이 가능한 통합 구조 설계
-- 외부 결제 API 연동 경험 축적
-- 실제 상용 서비스 흐름과 유사한 결제 프로세스 구현
-- 프론트엔드와 백엔드 간 API 협업 구조 이해
+- 생산 및 품질 흐름을 고려한 MES 백엔드 구조 설계
+- 데이터 처리 및 API 응답 기반 서버 구현
+- 프론트엔드 연동을 고려한 확장 가능한 백엔드 프로젝트 구성
+- 실제 제조 실행 시스템 구조를 반영한 서버 개발 경험 축적
 
 ---
 
 ## 🔮 Future Improvements
 
-- 주문 내역 조회 API 추가
-- 결제 상태 및 결제 이력 관리 기능 확장
-- 사용자 인증 및 권한 관리 기능 추가
-- 출고 / 재고 / 품질 관리 기능 연동
-- ERP / MES 도메인 확장
+- 생산 / 품질 도메인 API 확장
+- 인증 및 권한 처리 구조 고도화
+- 예외 처리 및 응답 포맷 표준화
+- 테스트 코드 및 검증 로직 강화
+- 프론트엔드 연동 기능 고도화
 
 ---
 
 ## 👩‍💻 Author
 
-DAON Integrated Commerce Platform Backend Project
+DAON MES Backend Project
